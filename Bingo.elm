@@ -99,6 +99,17 @@ entryList address entries =
   in
     ul [ ] entryItems
 
+totalScore entries =
+  div [id "total"]
+    [ text "Score:",
+      entries
+        |> (List.filter .wasSpoken)
+        |> (List.map .points)
+        |> List.sum
+        |> toString
+        |> text
+    ]
+
 view address model =
   div [ id "container" ]
     [ pageHeader,
@@ -106,6 +117,7 @@ view address model =
       button
         [ class "sort", onClick address Sort ]
         [ text "Sort"],
+      totalScore model.entries,
       pageFooter
     ]
 

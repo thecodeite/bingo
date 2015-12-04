@@ -10337,6 +10337,16 @@ Elm.Bingo.make = function (_elm) {
    $StartApp$Simple = Elm.StartApp.Simple.make(_elm),
    $String = Elm.String.make(_elm);
    var _op = {};
+   var totalScore = function (entries) {
+      return A2($Html.div,
+      _U.list([$Html$Attributes.id("total")]),
+      _U.list([$Html.text("Score:")
+              ,$Html.text($Basics.toString($List.sum(A2($List.map,
+              function (_) {
+                 return _.points;
+              },
+              A2($List.filter,function (_) {    return _.wasSpoken;},entries)))))]));
+   };
    var pageFooter = A2($Html.footer,
    _U.list([]),
    _U.list([A2($Html.a,_U.list([$Html$Attributes.href("http://webup.info")]),_U.list([$Html.text("A nice website for testing out Elm")]))]));
@@ -10371,6 +10381,7 @@ Elm.Bingo.make = function (_elm) {
       _U.list([pageHeader
               ,A2(entryList,address,model.entries)
               ,A2($Html.button,_U.list([$Html$Attributes.$class("sort"),A2($Html$Events.onClick,address,Sort)]),_U.list([$Html.text("Sort")]))
+              ,totalScore(model.entries)
               ,pageFooter]));
    });
    var NoOp = {ctor: "NoOp"};
@@ -10394,6 +10405,7 @@ Elm.Bingo.make = function (_elm) {
                               ,pageFooter: pageFooter
                               ,entryItem: entryItem
                               ,entryList: entryList
+                              ,totalScore: totalScore
                               ,view: view
                               ,main: main};
 };
