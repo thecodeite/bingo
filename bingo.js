@@ -10349,13 +10349,17 @@ Elm.Bingo.make = function (_elm) {
       switch (_p0.ctor)
       {case "NoOp": return model;
          case "Sort": return _U.update(model,{entries: A2($List.sortBy,function (_) {    return _.points;},model.entries)});
-         default: var remainingEntries = A2($List.filter,function (e) {    return !_U.eq(_p0._0,e.id);},model.entries);
-           return _U.update(model,{entries: remainingEntries});}
+         case "Delete": var remainingEntries = A2($List.filter,function (e) {    return !_U.eq(_p0._0,e.id);},model.entries);
+           return _U.update(model,{entries: remainingEntries});
+         default: var ifIdMatchesThenTogglePropertyToTrue = function (entry) {    return _U.update(entry,{wasSpoken: true});};
+           var entriesWithANewOneHighlighted = A2($List.map,ifIdMatchesThenTogglePropertyToTrue,model.entries);
+           return _U.update(model,{entries: entriesWithANewOneHighlighted});}
    });
+   var Mark = function (a) {    return {ctor: "Mark",_0: a};};
    var Delete = function (a) {    return {ctor: "Delete",_0: a};};
    var entryItem = F2(function (address,entry) {
       return A2($Html.li,
-      _U.list([]),
+      _U.list([$Html$Attributes.classList(_U.list([{ctor: "_Tuple2",_0: "highlight",_1: entry.wasSpoken}]))]),
       _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("phrase")]),_U.list([$Html.text(entry.phrase)]))
               ,A2($Html.span,_U.list([$Html$Attributes.$class("points")]),_U.list([$Html.text($Basics.toString(entry.points))]))
               ,A2($Html.button,_U.list([$Html$Attributes.$class("delete"),A2($Html$Events.onClick,address,Delete(entry.id))]),_U.list([]))]));
@@ -10368,6 +10372,7 @@ Elm.Bingo.make = function (_elm) {
       _U.list([pageHeader
               ,A2(entryList,address,model.entries)
               ,A2($Html.button,_U.list([$Html$Attributes.$class("sort"),A2($Html$Events.onClick,address,Sort)]),_U.list([$Html.text("Sort")]))
+              ,A2($Html.button,_U.list([$Html$Attributes.$class("sort"),A2($Html$Events.onClick,address,Mark(0))]),_U.list([$Html.text("Mark")]))
               ,pageFooter]));
    });
    var NoOp = {ctor: "NoOp"};
@@ -10384,6 +10389,7 @@ Elm.Bingo.make = function (_elm) {
                               ,NoOp: NoOp
                               ,Sort: Sort
                               ,Delete: Delete
+                              ,Mark: Mark
                               ,update: update
                               ,title: title
                               ,pageHeader: pageHeader

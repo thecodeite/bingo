@@ -41,6 +41,7 @@ type Action
   = NoOp
   | Sort
   | Delete Int
+  | Mark Int
 
 update action model =
   case action of
@@ -54,6 +55,14 @@ update action model =
           List.filter (\e -> id /= e.id) model.entries
       in
         { model | entries = remainingEntries }
+    Mark id ->
+      let
+        ifIdMatchesThenTogglePropertyToTrue entry =
+          {entry | wasSpoken = True }
+        entriesWithANewOneHighlighted =
+          List.map ifIdMatchesThenTogglePropertyToTrue model.entries
+      in
+        {model | entries = entriesWithANewOneHighlighted }
 
 -- VIEW
 
@@ -74,7 +83,7 @@ pageFooter =
     ]
 
 entryItem address entry =
-  li [ ]
+  li [ classList [ ("highlight", entry.wasSpoken) ] ]
     [ span [class "phrase"] [ text entry.phrase ],
       span [class "points"] [ text (toString entry.points) ],
       button
@@ -96,6 +105,9 @@ view address model =
       button
         [ class "sort", onClick address Sort ]
         [ text "Sort"],
+      button
+        [ class "sort", onClick address (Mark 0) ]
+        [ text "Mark"],
       pageFooter
     ]
 
