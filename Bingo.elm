@@ -40,6 +40,7 @@ initialModel =
 type Action
   = NoOp
   | Sort
+  | Delete Int
 
 update action model =
   case action of
@@ -47,6 +48,12 @@ update action model =
       model
     Sort ->
       { model | entries = List.sortBy .points model.entries }
+    Delete id ->
+      let
+        remainingEntries =
+          List.filter (\e -> id /= e.id) model.entries
+      in
+        { model | entries = remainingEntries }
 
 -- VIEW
 
@@ -66,19 +73,26 @@ pageFooter =
         [ text "A nice website for testing out Elm" ]
     ]
 
-entryItem entry =
+entryItem address entry =
   li [ ]
     [ span [class "phrase"] [ text entry.phrase ],
-      span [class "points"] [ text (toString entry.points) ]
+      span [class "points"] [ text (toString entry.points) ],
+      button
+        [class "delete", onClick address (Delete entry.id) ]
+        [  ]
+
     ]
 
-entryList entries =
-  ul [ ] (List.map entryItem entries)
+entryList address entries =
+  let
+    entryItems = List.map (entryItem address) entries
+  in
+    ul [ ] entryItems
 
 view address model =
   div [ id "container" ]
     [ pageHeader,
-      entryList model.entries,
+      entryList address model.entries,
       button
         [ class "sort", onClick address Sort ]
         [ text "Sort"],
