@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Signal exposing (Address)
-import String exposing (toUpper, repeat, trimRight)
+import String exposing (toUpper, repeat, trimRight, toInt)
 import StartApp.Simple as StartApp
 
 
@@ -55,7 +55,7 @@ initialModel =
     ],
     phraseInput = "",
     pointsInput = "",
-    nextID = 5
+    nextID = 7
   }
 
 -- UPDATE
@@ -67,6 +67,7 @@ type Action
   | Mark Int
   | UpdatePhraseInput String
   | UpdatePointsInput String
+  | CreateNewEntry
 
 update : Action -> Model -> Model
 update action model =
@@ -93,6 +94,20 @@ update action model =
 
     UpdatePointsInput contents ->
       { model | pointsInput = contents }
+
+    CreateNewEntry ->
+      let
+        pointsAsInt = case (toInt model.pointsInput) of
+          Ok points -> points
+          Err _ -> 0
+
+      in
+        { model |
+          entries = model.entries ++ [(newEntry model.phraseInput pointsAsInt model.nextID)],
+          nextID = model.nextID + 1,
+          phraseInput = "",
+          pointsInput = ""
+        }
 -- VIEW
 
 title : String -> Int -> Html
@@ -182,7 +197,7 @@ entryForm address model =
         Utils.onInput address UpdatePointsInput
        ]
       [ ],
-      button [class "add"] [text "Add"],
+      button [class "add", onClick address CreateNewEntry] [text "Add"],
       h2 [ ]
         [ text (model.phraseInput ++ " " ++ model.pointsInput)
         ]
