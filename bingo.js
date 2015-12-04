@@ -10337,6 +10337,9 @@ Elm.Bingo.make = function (_elm) {
    $StartApp$Simple = Elm.StartApp.Simple.make(_elm),
    $String = Elm.String.make(_elm);
    var _op = {};
+   var newEntryForm = A2($Html.form,
+   _U.list([]),
+   _U.list([A2($Html.label,_U.list([]),_U.list([$Html.text("New buzz-word:")])),A2($Html.input,_U.list([]),_U.list([]))]));
    var totalScore = function (entries) {
       return A2($Html.div,
       _U.list([$Html$Attributes.id("total")]),
@@ -10395,6 +10398,7 @@ Elm.Bingo.make = function (_elm) {
       _U.list([pageHeader
               ,A2(entryList,address,model.entries)
               ,A2($Html.button,_U.list([$Html$Attributes.$class("sort"),A2($Html$Events.onClick,address,Sort)]),_U.list([$Html.text("Sort")]))
+              ,newEntryForm
               ,pageFooter]));
    });
    var NoOp = {ctor: "NoOp"};
@@ -10405,7 +10409,11 @@ Elm.Bingo.make = function (_elm) {
                                         ,A3(newEntry,"Rap gansta brawler scrawler",400,4)
                                         ,A3(newEntry,"Sumbling forwards aimlessly",600,6)])};
    var main = $StartApp$Simple.start({model: initialModel,view: view,update: update});
+   var Model = function (a) {    return {entries: a};};
+   var Entry = F4(function (a,b,c,d) {    return {phrase: a,points: b,wasSpoken: c,id: d};});
    return _elm.Bingo.values = {_op: _op
+                              ,Entry: Entry
+                              ,Model: Model
                               ,newEntry: newEntry
                               ,initialModel: initialModel
                               ,NoOp: NoOp
@@ -10421,6 +10429,7 @@ Elm.Bingo.make = function (_elm) {
                               ,totalItem: totalItem
                               ,entryList: entryList
                               ,totalScore: totalScore
+                              ,newEntryForm: newEntryForm
                               ,view: view
                               ,main: main};
 };
