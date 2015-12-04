@@ -7,6 +7,8 @@ import Signal exposing (Address)
 import String exposing (toUpper, repeat, trimRight)
 import StartApp.Simple as StartApp
 
+
+import BingoUtils as Utils
 -- MODEL
 
 type alias Entry =
@@ -18,7 +20,10 @@ type alias Entry =
 
 type alias Model =
   {
-    entries: List Entry
+    entries: List Entry,
+    phraseInput: String,
+    pointsInput: String,
+    nextID: Int
   }
 
 newEntry : String -> Int -> Int -> Entry
@@ -47,7 +52,10 @@ initialModel =
       newEntry "Future evident" 100 1,
       newEntry "Rap gansta brawler scrawler" 400 4,
       newEntry "Sumbling forwards aimlessly" 600 6
-    ]
+    ],
+    phraseInput = "",
+    pointsInput = "",
+    nextID = 5
   }
 
 -- UPDATE
@@ -57,6 +65,8 @@ type Action
   | Sort
   | Delete Int
   | Mark Int
+  | UpdatePhraseInput String
+  | UpdatePointsInput String
 
 update : Action -> Model -> Model
 update action model =
@@ -78,6 +88,11 @@ update action model =
       in
         {model | entries = List.map updateEntry model.entries }
 
+    UpdatePhraseInput contents ->
+      { model | phraseInput = contents }
+
+    UpdatePointsInput contents ->
+      { model | pointsInput = contents }
 -- VIEW
 
 title : String -> Int -> Html
@@ -147,11 +162,40 @@ totalScore entries =
         |> text
     ]
 
+entryForm : Address Action -> Model -> Html
+entryForm address model =
+  div [ ]
+    [ input
+      [ type' "text",
+        placeholder "Phrase",
+        value model.phraseInput,
+        name "phrase",
+        autofocus True,
+        Utils.onInput address UpdatePhraseInput
+      ]
+      [ ],
+      input
+      [ type' "number",
+        placeholder "Points",
+        value model.pointsInput,
+        name "points",
+        Utils.onInput address UpdatePointsInput
+       ]
+      [ ],
+      button [class "add"] [text "Add"],
+      h2 [ ]
+        [ text (model.phraseInput ++ " " ++ model.pointsInput)
+        ]
+
+   ]
+
+
 
 view : Address Action -> Model -> Html
 view address model =
   div [ id "container" ]
     [ pageHeader,
+      entryForm address model,
       entryList address model.entries,
       button
         [ class "sort", onClick address Sort ]
