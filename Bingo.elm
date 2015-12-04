@@ -58,7 +58,11 @@ update action model =
     Mark id ->
       let
         ifIdMatchesThenTogglePropertyToTrue entry =
-          {entry | wasSpoken = True }
+          if entry.id == id then
+            { entry | wasSpoken = True }
+          else
+            entry
+
         entriesWithANewOneHighlighted =
           List.map ifIdMatchesThenTogglePropertyToTrue model.entries
       in
@@ -84,7 +88,7 @@ pageFooter =
 
 entryItem address entry =
   li [ classList [ ("highlight", entry.wasSpoken) ] ]
-    [ span [class "phrase"] [ text entry.phrase ],
+    [ span [class "phrase", onClick address (Mark entry.id)] [ text entry.phrase ],
       span [class "points"] [ text (toString entry.points) ],
       button
         [class "delete", onClick address (Delete entry.id) ]
@@ -105,9 +109,6 @@ view address model =
       button
         [ class "sort", onClick address Sort ]
         [ text "Sort"],
-      button
-        [ class "sort", onClick address (Mark 0) ]
-        [ text "Mark"],
       pageFooter
     ]
 
