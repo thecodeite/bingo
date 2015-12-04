@@ -57,16 +57,10 @@ update action model =
         { model | entries = remainingEntries }
     Mark id ->
       let
-        ifIdMatchesThenTogglePropertyToTrue entry =
-          if entry.id == id then
-            { entry | wasSpoken = True }
-          else
-            entry
-
-        entriesWithANewOneHighlighted =
-          List.map ifIdMatchesThenTogglePropertyToTrue model.entries
+        updateEntry e =
+          if e.id == id then { e | wasSpoken = (not e.wasSpoken) } else e
       in
-        {model | entries = entriesWithANewOneHighlighted }
+        {model | entries = List.map updateEntry model.entries }
 
 -- VIEW
 
@@ -87,8 +81,11 @@ pageFooter =
     ]
 
 entryItem address entry =
-  li [ classList [ ("highlight", entry.wasSpoken) ] ]
-    [ span [class "phrase", onClick address (Mark entry.id)] [ text entry.phrase ],
+  li
+    [ classList [ ("highlight", entry.wasSpoken) ],
+      onClick address (Mark entry.id)
+    ]
+    [ span [class "phrase"] [ text entry.phrase ],
       span [class "points"] [ text (toString entry.points) ],
       button
         [class "delete", onClick address (Delete entry.id) ]
