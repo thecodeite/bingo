@@ -97,13 +97,13 @@ update action model =
 
     CreateNewEntry ->
       let
-        pointsAsInt = case (toInt model.pointsInput) of
+        pointsInputAsInt = case (toInt model.pointsInput) of
           Ok points -> points
           Err _ -> 0
-
+        ourNewEntry = newEntry model.phraseInput pointsInputAsInt model.nextID
       in
         { model |
-          entries = model.entries ++ [(newEntry model.phraseInput pointsAsInt model.nextID)],
+          entries = ourNewEntry :: model.entries,
           nextID = model.nextID + 1,
           phraseInput = "",
           pointsInput = ""

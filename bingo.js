@@ -10456,7 +10456,7 @@ Elm.Bingo.make = function (_elm) {
            return _U.update(model,{entries: A2($List.map,updateEntry,model.entries)});
          case "UpdatePhraseInput": return _U.update(model,{phraseInput: _p0._0});
          case "UpdatePointsInput": return _U.update(model,{pointsInput: _p0._0});
-         default: var pointsAsInt = function () {
+         default: var pointsInputAsInt = function () {
               var _p1 = $String.toInt(model.pointsInput);
               if (_p1.ctor === "Ok") {
                     return _p1._0;
@@ -10464,11 +10464,8 @@ Elm.Bingo.make = function (_elm) {
                     return 0;
                  }
            }();
-           return _U.update(model,
-           {entries: A2($Basics._op["++"],model.entries,_U.list([A3(newEntry,model.phraseInput,pointsAsInt,model.nextID)]))
-           ,nextID: model.nextID + 1
-           ,phraseInput: ""
-           ,pointsInput: ""});}
+           var ourNewEntry = A3(newEntry,model.phraseInput,pointsInputAsInt,model.nextID);
+           return _U.update(model,{entries: A2($List._op["::"],ourNewEntry,model.entries),nextID: model.nextID + 1,phraseInput: "",pointsInput: ""});}
    });
    var main = $StartApp$Simple.start({model: initialModel,view: view,update: update});
    var Model = F4(function (a,b,c,d) {    return {entries: a,phraseInput: b,pointsInput: c,nextID: d};});
