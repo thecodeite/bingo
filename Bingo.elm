@@ -67,7 +67,7 @@ type Action
   | Mark Int
   | UpdatePhraseInput String
   | UpdatePointsInput String
-  | CreateNewEntry
+  | Add
 
 update : Action -> Model -> Model
 update action model =
@@ -95,19 +95,24 @@ update action model =
     UpdatePointsInput contents ->
       { model | pointsInput = contents }
 
-    CreateNewEntry ->
+    Add ->
       let
         pointsInputAsInt = case (toInt model.pointsInput) of
           Ok points -> points
           Err _ -> 0
-        ourNewEntry = newEntry model.phraseInput pointsInputAsInt model.nextID
+        entryToAdd = newEntry model.phraseInput pointsInputAsInt model.nextID
+        isInvalid = String.isEmpty model.phraseInput || String.isEmpty model.pointsInput
       in
-        { model |
-          entries = ourNewEntry :: model.entries,
-          nextID = model.nextID + 1,
-          phraseInput = "",
-          pointsInput = ""
-        }
+        if isInvalid 
+        then model
+        else
+          { model |
+            entries = entryToAdd :: model.entries,
+            nextID = model.nextID + 1,
+            phraseInput = "",
+            pointsInput = ""
+          }
+
 -- VIEW
 
 title : String -> Int -> Html
@@ -197,7 +202,7 @@ entryForm address model =
         Utils.onInput address UpdatePointsInput
        ]
       [ ],
-      button [class "add", onClick address CreateNewEntry] [text "Add"],
+      button [class "add", onClick address Add] [text "Add"],
       h2 [ ]
         [ text (model.phraseInput ++ " " ++ model.pointsInput)
         ]

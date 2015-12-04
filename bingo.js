@@ -10387,7 +10387,7 @@ Elm.Bingo.make = function (_elm) {
       return $Html.text($String.trimRight(A2($String.repeat,times,$String.toUpper(A2($Basics._op["++"],message," ")))));
    });
    var pageHeader = A2($Html.h1,_U.list([]),_U.list([A2(title,"Bingo!",3)]));
-   var CreateNewEntry = {ctor: "CreateNewEntry"};
+   var Add = {ctor: "Add"};
    var UpdatePointsInput = function (a) {    return {ctor: "UpdatePointsInput",_0: a};};
    var UpdatePhraseInput = function (a) {    return {ctor: "UpdatePhraseInput",_0: a};};
    var entryForm = F2(function (address,model) {
@@ -10408,7 +10408,7 @@ Elm.Bingo.make = function (_elm) {
                       ,$Html$Attributes.name("points")
                       ,A2($BingoUtils.onInput,address,UpdatePointsInput)]),
               _U.list([]))
-              ,A2($Html.button,_U.list([$Html$Attributes.$class("add"),A2($Html$Events.onClick,address,CreateNewEntry)]),_U.list([$Html.text("Add")]))
+              ,A2($Html.button,_U.list([$Html$Attributes.$class("add"),A2($Html$Events.onClick,address,Add)]),_U.list([$Html.text("Add")]))
               ,A2($Html.h2,_U.list([]),_U.list([$Html.text(A2($Basics._op["++"],model.phraseInput,A2($Basics._op["++"]," ",model.pointsInput)))]))]));
    });
    var Mark = function (a) {    return {ctor: "Mark",_0: a};};
@@ -10456,7 +10456,8 @@ Elm.Bingo.make = function (_elm) {
            return _U.update(model,{entries: A2($List.map,updateEntry,model.entries)});
          case "UpdatePhraseInput": return _U.update(model,{phraseInput: _p0._0});
          case "UpdatePointsInput": return _U.update(model,{pointsInput: _p0._0});
-         default: var pointsInputAsInt = function () {
+         default: var isInvalid = $String.isEmpty(model.phraseInput) || $String.isEmpty(model.pointsInput);
+           var pointsInputAsInt = function () {
               var _p1 = $String.toInt(model.pointsInput);
               if (_p1.ctor === "Ok") {
                     return _p1._0;
@@ -10464,8 +10465,9 @@ Elm.Bingo.make = function (_elm) {
                     return 0;
                  }
            }();
-           var ourNewEntry = A3(newEntry,model.phraseInput,pointsInputAsInt,model.nextID);
-           return _U.update(model,{entries: A2($List._op["::"],ourNewEntry,model.entries),nextID: model.nextID + 1,phraseInput: "",pointsInput: ""});}
+           var entryToAdd = A3(newEntry,model.phraseInput,pointsInputAsInt,model.nextID);
+           return isInvalid ? model : _U.update(model,
+           {entries: A2($List._op["::"],entryToAdd,model.entries),nextID: model.nextID + 1,phraseInput: "",pointsInput: ""});}
    });
    var main = $StartApp$Simple.start({model: initialModel,view: view,update: update});
    var Model = F4(function (a,b,c,d) {    return {entries: a,phraseInput: b,pointsInput: c,nextID: d};});
@@ -10481,7 +10483,7 @@ Elm.Bingo.make = function (_elm) {
                               ,Mark: Mark
                               ,UpdatePhraseInput: UpdatePhraseInput
                               ,UpdatePointsInput: UpdatePointsInput
-                              ,CreateNewEntry: CreateNewEntry
+                              ,Add: Add
                               ,update: update
                               ,title: title
                               ,pageHeader: pageHeader
